@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+    <button id="btnGET">GET</button>
+    <button id="btnGET2">GET跨域jsonp</button>
+    <button id="btnPOST">POST</button>
+    <button id="btnPOST2">POST跨域CORS</button>
+</body>
+<script>
+    /*
+        跨域问题：浏览器页面所在地址和页面中js中请求数据的接口地址不同源，就会发生跨域问题
+        浏览器同源策略：不同页面的协议、域名/ip、端口要相同，则同源
+        同源策略限制：非同源页面之间：
+            1.不可读取Cookie、LocalStorage和IndexDB；
+            2.DOM无法获得；
+            3.AJAX请求无法发送。
+        跨域问题解决：
+            1.使用代理，浏览器请求同源服务器作为代理，再由代理转发到外部请求；
+            2.JSONP
+                利用<script>标签不受同源策略限制的特点，页面动态生成<script>标签，不适合多次发请求，因为每请求一次就多一个script标签；
+            3.WebSocket
+
+            4.CORS（Cross-Ogigin Resource Sharing）跨源资源访问 
+                服务器通过浏览器中发来的XMLHttpRequest请求中头部Origin字段的值判断是否响应该请求，因此需要浏览器和服务器同时支持，
+                现在的浏览器发现跨域请求时，会自动加上Origin请求头，只要服务器支持，即可实现跨域。
+                服务器在响应头中加 Access-Contrl-Allow-Origin ，浏览器检测到该字段则正常使用返回数据，否则抛出错误
+
+    */
+    $(function() {
+        $('#btnGET').on('click', function() {
+            $.ajax({
+                type: 'GET',
+                url: 'http://127.0.0.1:8015/api/get',
+                data: {name: 'zs', age: 20},
+                success: function(res) {
+                    console.log(res)
+                }
+            })
+        })
+        $('#btnGET2').on('click', function() {
+            jsonp('http://127.0.0.1:8015/api/get/jsonp?name=Jack&age=30', 'foo') 
+        })
+        $('#btnPOST').on('click', function() {
+            $.ajax({
+                type: 'POST',
+                url: 'http://127.0.0.1:8015/api/post',
+                data: {name: 'ls', age: 22},
+                success: function(res) {
+                    console.log(res)
+                }
+            })
+        })
+        $('#btnPOST2').on('click', function() {
+            $.ajax({
+                type: 'POST',
+                headers: {'Content-Type':'application/json'},
+                url: 'http://127.0.0.1:8015/api/post/cors',
+                data: {name: 'ls', age: 22},
+                success: function(res) {
+                    console.log(res)
+                }
+            })
+        })
+    })
+
+    function jsonp(url, callback) {
+        var script = document.createElement('script')
+        script.setAttribute('type', 'text/javascript')
+        script.src = url + (url.includes('?') ? '&callback='+callback : '?callback='+callback)
+        document.body.appendChild(script)
+    }
+
+    function foo(data) {
+        console.log('foo:', data)
+    }
+
+</script>
+</html>

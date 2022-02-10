@@ -1,0 +1,9 @@
+{
+  "name": "7.0mypackage",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "joi": "^17.6.0"
+  },
+  "main": "lib/index.js"
+}
